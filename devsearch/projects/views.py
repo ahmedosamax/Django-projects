@@ -4,9 +4,16 @@ from .forms import ProjectForm
 from django.contrib import messages
 from .models import project
 
+from .utils import searchProject,paginationProject
+
+
+
+
 def projects(request):
-    projects = project.objects.all()
-    context = {"projects":projects}
+    projects,search_query = searchProject(request)
+    custom_range,projects = paginationProject(request,projects,2)
+
+    context = {"projects":projects, 'search_query': search_query , 'custom_range':custom_range}
     return render(request,'projects/projects.html',context)
 
 def pproject(request,pk):

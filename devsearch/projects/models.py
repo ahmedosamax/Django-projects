@@ -16,6 +16,8 @@ class project(models.Model):
                           primary_key=True, editable=False)
     def __str__(self):
         return self.Title
+    class Meta:
+        ordering = ['Created']
     
 
 class Reviews(models.Model):

@@ -4,11 +4,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm,ProfileForm,SkillForm
 from django.contrib import messages
-from .models import Profile
+from .models import Profile,Skill
+from .utils import searchProfile,paginationProfiles
+
+
+
 def profiles (request):
-    page = 'login'
-    profiles = Profile.objects.all()
-    context = {'profiles':profiles}
+    profiles , search_query = searchProfile(request)
+    custom_range, profiles =paginationProfiles(request,profiles,6)
+    context = {'profiles':profiles, 'search_query':search_query,'custom_range':custom_range}
     return render(request,'users/profiles.html',context)
 
 def userProfile(request,pk):
