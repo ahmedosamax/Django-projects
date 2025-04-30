@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 from users.models import Profile
 class project(models.Model):
-    owner = models.ForeignKey(Profile, null= True,blank= True, on_delete = models.SET_NULL)
+    owner = models.ForeignKey(Profile, null= True,blank= True, on_delete = models.CASCADE)
     Title = models.CharField(max_length=200)
     Description = models.TextField(max_length= 2000, null= True, blank= True)
     featured_image = models.ImageField(null=True,blank=True , default ="default.jpg" )
@@ -18,6 +18,14 @@ class project(models.Model):
         return self.Title
     class Meta:
         ordering = ['-vote_ratio','-Vote_total','Title']
+
+    @property
+    def imageURL(self):
+        try :
+            url = self.featured_image.url
+        except:
+            url = ''
+        return url
     
     @property
     def reviewers(self):

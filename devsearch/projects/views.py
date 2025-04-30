@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import ProjectForm,ReviewForm
 from django.contrib import messages
-from .models import project
+from .models import project,tag
 
 from .utils import searchProject,paginationProject
 
@@ -36,11 +36,15 @@ def CreateProject(request):
     profile = request.user.profile
     form = ProjectForm()
     if request.method == "POST":
+        newtags = request.POST.get('newtags').replace(',' , ' ').split()
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             project = form.save(commit = False)
             project.owner = profile
             project.save()
+            for tagg in newtags:
+               tagg, created = tag.objects.get_or_create(name= tagg)
+               project.Tags.add(tagg)
             return redirect('account')
     context = {'form': form}
     return render(request, 'projects/project_form.html', context)
@@ -51,11 +55,15 @@ def updateProject(request,pk):
     proj = profile.project_set.get(id=pk)
     form = ProjectForm(instance = proj)
     if request.method == "POST":
+        newtags = request.POST.get('newtags').replace(',' , ' ').split()
         form = ProjectForm(request.POST, request.FILES, instance= proj)
         if form.is_valid():
-            form.save()
+            proj =  form.save()
+            for tagg in newtags:
+               tagg, created = tag.objects.get_or_create(name= tagg)
+               proj.Tags.add(tagg)
             return redirect('account')
-    context = {'form': form}
+    context = {'form': form,'project':proj}
     return render(request, 'projects/project_form.html', context)
 
 @login_required(login_url= 'login')
